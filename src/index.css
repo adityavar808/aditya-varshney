@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  background-color: #0C0C0C;
+  color: #D7E2EA;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for smooth styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0C0C0C;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A2A2A;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Gradient Text for Headings */
+h1,
+h2,
+h3,
+.hero-heading {
+  font-family: 'Satoshi', sans-serif;
+}
+
+.hero-heading {
+  background: linear-gradient(180deg, #646973 0%, #BBCCD7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Will change transform optimization */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Infinite Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+
+/* React Spin Animation */
+@keyframes react-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-react-spin {
+  animation: react-spin 12s linear infinite;
+  transform-origin: center;
+}
+
+/* Brain Pulse / Heartbeat Animation */
+@keyframes brain-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px rgba(182, 0, 168, 0)); }
+  50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(182, 0, 168, 0.6)); }
+}
+.animate-brain-pulse {
+  animation: brain-pulse 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* PyTorch Glow / Breath Animation */
+@keyframes pytorch-breath {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 1px rgba(238, 76, 44, 0.3)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(238, 76, 44, 0.7)); }
+}
+.animate-pytorch-breath {
+  animation: pytorch-breath 2.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Python Float Animation */
+@keyframes python-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-2px) rotate(2deg); }
+}
+.animate-python-float {
+  animation: python-float 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* TensorFlow Isometric Wobble Animation */
+@keyframes tf-wobble {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.05) rotate(-3deg); }
+}
+.animate-tf-wobble {
+  animation: tf-wobble 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* FastAPI Pulse / Flash Animation */
+@keyframes fastapi-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(5, 150, 105, 0.4)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(5, 150, 105, 0.8)); }
+}
+.animate-fastapi-pulse {
+  animation: fastapi-pulse 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Gradient Shimmer Animation */
+@keyframes gradient-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-shimmer {
+  background-size: 200% auto !important;
+  animation: gradient-shimmer 4s ease infinite;
+}
+
+
+
