@@ -1,0 +1,292 @@
+# Aditya Varshney - Personal Biography & Knowledge Base
+
+## Basic Information
+
+**Name:** Aditya Varshney
+
+**Role:** Computer Science Engineering Student | Full Stack AI Developer | Machine Learning Enthusiast
+
+**Education:** B.Tech in Computer Science Engineering (Artificial Intelligence & Machine Learning)
+
+**Current Goal:** Become an AI Engineer specializing in Machine Learning, Large Language Models, AI Agents, and Full Stack AI Applications.
+
+---
+
+# About Me
+
+Hello! I'm Aditya Varshney, a Computer Science Engineering student passionate about building intelligent software that combines modern web development with Artificial Intelligence.
+
+I enjoy solving real-world problems through technology and continuously explore new advancements in Machine Learning, Deep Learning, Generative AI, Large Language Models, and Full Stack Development.
+
+I believe in learning by building. Most of my knowledge comes from developing practical projects rather than only studying theory. I enjoy experimenting with new technologies, optimizing existing systems, and creating products that are useful, scalable, and user-friendly.
+
+---
+
+# Areas of Interest
+
+* Artificial Intelligence
+* Machine Learning
+* Deep Learning
+* Computer Vision
+* Natural Language Processing
+* Large Language Models (LLMs)
+* Generative AI
+* Full Stack Web Development
+* Backend Engineering
+* Cloud Computing
+* Open Source
+* Software Engineering
+
+---
+
+# Technical Skills
+
+## Programming Languages
+
+* Python
+* JavaScript
+* Java
+* SQL
+
+---
+
+## Frontend
+
+* React.js
+* Next.js
+* HTML5
+* CSS3
+* Material UI
+* Bootstrap
+* Responsive Web Design
+* REST API Integration
+
+---
+
+## Backend
+
+* Node.js
+* Express.js
+* Flask
+* REST APIs
+* Authentication
+* JWT
+* API Development
+
+---
+
+## Databases
+
+* MongoDB
+* MySQL
+
+---
+
+## Artificial Intelligence
+
+### Machine Learning
+
+* Supervised Learning
+* Unsupervised Learning
+* Regression
+* Classification
+* Clustering
+* Feature Engineering
+* Model Evaluation
+
+### Deep Learning
+
+* Artificial Neural Networks
+* CNN
+* RNN
+* LSTM
+* Transfer Learning
+* Fine-Tuning
+* Model Optimization
+
+### Libraries
+
+* PyTorch
+* TensorFlow
+* Keras
+* Scikit-learn
+* NumPy
+* Pandas
+* Matplotlib
+* OpenCV
+
+### Large Language Models
+
+* Prompt Engineering
+* Retrieval-Augmented Generation (RAG)
+* LangChain
+* Hugging Face
+* Transformers
+* AI Chatbots
+* AI Assistants
+
+---
+
+## Development Tools
+
+* Git
+* GitHub
+* VS Code
+* Linux
+* Postman
+* Jupyter Notebook
+* npm
+* Vite
+
+---
+
+# Software Development Skills
+
+* Full Stack Application Development
+* REST API Design
+* Authentication Systems
+* Responsive UI Development
+* Database Design
+* Object-Oriented Programming
+* Data Structures & Algorithms
+* Problem Solving
+* Debugging
+* Version Control
+
+---
+
+# Major Projects
+
+## InterviewVerse AI
+
+An AI-powered interview preparation platform that simulates real technical and HR interviews using Large Language Models. It provides resume-based question generation, AI interview sessions, performance evaluation, personalized feedback, and an interactive dashboard to help users improve their interview skills.
+
+**Technologies:** React.js, Node.js, Express.js, MongoDB, Python, LLM APIs.
+
+---
+
+## Real-Time Video Analysis
+
+A computer vision application capable of processing live video streams to detect, classify, and analyze objects in real time. The project leverages deep learning models and OpenCV for efficient video processing and AI-based visual understanding.
+
+**Technologies:** Python, OpenCV, PyTorch, TensorFlow, Flask.
+
+---
+
+## Zenix
+
+Zenix is an AI-powered personal assistant and productivity platform designed to simplify daily workflows using conversational AI. It integrates intelligent chat capabilities, automation features, and modern web technologies to provide users with a seamless digital assistant experience.
+
+**Technologies:** React.js, Node.js, Express.js, MongoDB, Python, LLM APIs.
+
+---
+
+# Learning Journey
+
+I enjoy continuously learning emerging technologies. My learning process follows a practical approach:
+
+1. Learn the fundamentals.
+2. Build small applications.
+3. Develop production-ready projects.
+4. Optimize performance.
+5. Share work on GitHub.
+
+---
+
+# Problem Solving
+
+I actively practice coding and algorithmic problem solving, focusing on:
+
+* Arrays
+* Strings
+* Binary Search
+* Dynamic Programming
+* Graph Algorithms
+* Trees
+* Sliding Window
+* Greedy Algorithms
+* Recursion
+* Backtracking
+
+---
+
+# Interests Outside Coding
+
+* Reading AI research papers
+* Exploring new developer tools
+* Building side projects
+* UI/UX design
+* Learning emerging technologies
+* Open-source contributions
+
+---
+
+# Career Goals
+
+### Short-Term Goals
+
+* Master Machine Learning and Deep Learning
+* Build production-ready AI applications
+* Improve Data Structures & Algorithms
+* Secure an AI or Software Engineering internship
+
+### Long-Term Goals
+
+* Become an AI Engineer
+* Build impactful AI products
+* Work with Large Language Models
+* Contribute to open-source AI
+* Launch AI-driven products and startups
+
+---
+
+# Personality
+
+* Curious learner
+* Self-motivated
+* Fast learner
+* Creative thinker
+* Detail-oriented
+* Team player
+* Technology enthusiast
+* Continuous learner
+
+---
+
+# Working Style
+
+I enjoy writing clean, maintainable, and modular code. I focus on understanding problems thoroughly before implementing efficient and scalable solutions. I believe in continuous improvement and enjoy collaborating with others to build high-quality software.
+
+---
+
+# Communication Style
+
+* Professional
+* Friendly
+* Helpful
+* Logical
+* Clear
+* Solution-oriented
+
+---
+
+# Fun Facts
+
+* I enjoy building AI-powered applications.
+* I learn best through hands-on projects.
+* I enjoy experimenting with the latest AI technologies.
+* I believe consistency is the key to mastering technology.
+
+---
+
+# Social Profiles
+
+**LinkedIn:** https://www.linkedin.com/in/adityaavarshney/
+
+**GitHub:** https://github.com/adityavar808
+
+---
+
+# Summary
+
+Aditya Varshney is a Computer Science Engineering student passionate about Artificial Intelligence and Full Stack Development. He specializes in building AI-powered web applications, machine learning systems, and modern software solutions. His interests include Large Language Models, Retrieval-Augmented Generation, Computer Vision, Deep Learning, and scalable backend development. Through projects like InterviewVerse AI, Real-Time Video Analysis, and Zenix, he continues to expand his expertise while working toward becoming a skilled AI Engineer.

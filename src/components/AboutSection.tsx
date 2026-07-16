@@ -1,11 +1,21 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { FadeIn } from './FadeIn';
 import { AnimatedText } from './AnimatedText';
 import { ContactButton } from './ContactButton';
 
+const DEFAULT_BIO = "I'm Aditya Varshney, a Computer Science Engineering student passionate about Full Stack Development and AI/ML. I enjoy building intelligent, user-friendly applications using modern web technologies and machine learning. I'm continuously learning, creating real-world projects, and striving to become an AI Engineer who develops impactful solutions.";
+
 export const AboutSection: React.FC = () => {
-  // Personal bio for Aditya Varshney
-  const aboutText = "I'm Aditya Varshney, a Computer Science Engineering student passionate about Full Stack Development and AI/ML. I enjoy building intelligent, user-friendly applications using modern web technologies and machine learning. I'm continuously learning, creating real-world projects, and striving to become an AI Engineer who develops impactful solutions.";
+  const [aboutText, setAboutText] = useState(DEFAULT_BIO);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/about`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.bioText) setAboutText(data.bioText);
+      })
+      .catch(err => console.log('Backend not running, using local fallback:', err));
+  }, []);
 
 
   return (

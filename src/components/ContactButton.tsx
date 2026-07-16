@@ -18,7 +18,7 @@ export const ContactButton: React.FC<ContactButtonProps> = ({ onClick, className
       if (contactSection) {
         contactSection.scrollIntoView({ behavior: 'smooth' });
       } else {
-        window.location.href = 'mailto:aditya@example.com';
+        window.location.href = 'mailto:adityavarshney808@gmail.com';
       }
     }
   };

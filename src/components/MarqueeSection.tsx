@@ -1,8 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Brain } from 'lucide-react';
 
-// Tech cards with brand-specific styling and descriptions
-const TECH_CARDS = [
+interface TechCard {
+  name: string;
+  tagline: string;
+  glow: string;
+  border: string;
+  icon: React.ReactNode;
+}
+
+const DEFAULT_TECH_CARDS: TechCard[] = [
   { 
     name: 'PyTorch', 
     tagline: 'Deep Learning & Neural Networks', 
@@ -78,7 +85,7 @@ const TECH_CARDS = [
 // Tech cards are duplicated in the render method for a seamless marquee loop
 
 // Individual 3D Tilting Card Component
-const TiltCard: React.FC<{ item: typeof TECH_CARDS[0] }> = ({ item }) => {
+const TiltCard: React.FC<{ item: TechCard }> = ({ item }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -151,19 +158,58 @@ const TiltCard: React.FC<{ item: typeof TECH_CARDS[0] }> = ({ item }) => {
 };
 
 export const MarqueeSection: React.FC = () => {
+  const [techCards, setTechCards] = useState<TechCard[]>(DEFAULT_TECH_CARDS);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/skills`)
+      .then(res => res.json())
+      .then((data: any[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const formatted = data.map(item => {
+            let iconNode: React.ReactNode = null;
+            if (item.iconType === 'svg') {
+              // Custom SVG path or compound paths
+              const content = item.iconContent.trim();
+              if (/^<(path|circle|rect|g|ellipse|line|polygon)/i.test(content)) {
+                iconNode = (
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    className="w-6 h-6 animate-pulse"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                  />
+                );
+              } else {
+                // If it's a complete svg markup
+                iconNode = (
+                  <div 
+                    className="w-6 h-6"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                  />
+                );
+              }
+            } else {
+              // fallback to Brain icon
+              iconNode = <Brain className="w-6 h-6 text-[#B600A8] animate-brain-pulse" />;
+            }
+
+            return {
+              name: item.name,
+              tagline: item.tagline,
+              glow: item.glow,
+              border: item.border,
+              icon: iconNode
+            };
+          });
+          setTechCards(formatted);
+        }
+      })
+      .catch(err => console.log('Skills API fallback:', err));
+  }, []);
+
   return (
     <section className="bg-[#0C0C0C] w-full py-16 overflow-hidden flex flex-col justify-center items-center relative border-b border-white/5 font-heading select-none">
       
-      {/* Header Info */}
-      <div className="text-center z-10 pointer-events-none mb-10 px-4">
-        <h3 className="text-xs uppercase tracking-widest text-[#D7E2EA]/40 font-semibold mb-1">
-          Core Technical Capabilities
-        </h3>
-        <p className="text-xs sm:text-sm text-[#D7E2EA]/50 font-light max-w-md leading-relaxed font-sans">
-          Hover over nodes to explore tech details and experience tactile 3D card tilt physics.
-        </p>
-      </div>
-
       {/* Infinite Horizontal Marquee Container */}
       <div className="w-full flex overflow-x-hidden relative py-4 z-0 group">
         {/* Left Fading Edge Mask */}
@@ -171,14 +217,14 @@ export const MarqueeSection: React.FC = () => {
         
         {/* Scrolling Cards Row 1 */}
         <div className="flex gap-6 pr-6 animate-marquee shrink-0 group-hover:[animation-play-state:paused]">
-          {TECH_CARDS.map((item, index) => (
+          {techCards.map((item, index) => (
             <TiltCard key={`${item.name}-1-${index}`} item={item} />
           ))}
         </div>
 
         {/* Scrolling Cards Row 2 */}
         <div className="flex gap-6 pr-6 animate-marquee shrink-0 group-hover:[animation-play-state:paused]" aria-hidden="true">
-          {TECH_CARDS.map((item, index) => (
+          {techCards.map((item, index) => (
             <TiltCard key={`${item.name}-2-${index}`} item={item} />
           ))}
         </div>

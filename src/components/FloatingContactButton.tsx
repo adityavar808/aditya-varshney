@@ -50,7 +50,7 @@ export const FloatingContactButton: React.FC = () => {
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: 'smooth' });
     } else {
-      window.location.href = 'mailto:aditya@example.com';
+      window.location.href = 'mailto:adityavarshney808@gmail.com';
     }
   };
 

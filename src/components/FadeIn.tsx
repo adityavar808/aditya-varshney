@@ -11,6 +11,9 @@ interface FadeInProps {
   className?: string;
 }
 
+// Cache created motion components to prevent unmounting children on rerender
+const motionComponentsCache: Record<string, any> = {};
+
 export const FadeIn: React.FC<FadeInProps> = ({
   children,
   delay = 0,
@@ -20,8 +23,11 @@ export const FadeIn: React.FC<FadeInProps> = ({
   as = 'div',
   className = '',
 }) => {
-  // Use motion.create for dynamic HTML elements
-  const MotionComponent = motion.create(as as any);
+  // Retrieve or create and cache the motion component
+  if (!motionComponentsCache[as]) {
+    motionComponentsCache[as] = motion.create(as as any);
+  }
+  const MotionComponent = motionComponentsCache[as];
 
   return (
     <MotionComponent
