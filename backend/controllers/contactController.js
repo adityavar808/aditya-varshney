@@ -22,11 +22,15 @@ const submitContact = async (req, res) => {
     ) {
       try {
         const transporter = nodemailer.createTransport({
-          service: 'gmail',
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true, // SSL — Railway blocks 587/STARTTLS, port 465 works
           auth: {
             user: process.env.GMAIL_USER,
             pass: process.env.GMAIL_PASS,
           },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
         });
 
         const mailOptions = {
@@ -93,11 +97,15 @@ const sendReply = async (req, res) => {
 
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // SSL — Railway blocks 587/STARTTLS, port 465 works
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
     });
 
     const mailOptions = {

@@ -12,12 +12,14 @@ const getAll = async (req, res) => {
 
 // POST /api/projects
 const create = async (req, res) => {
-  const { id, name, category, liveUrl, imgCol1Top, imgCol1Bottom, imgCol2 } = req.body;
-  if (!id || !name || !category || !liveUrl || !imgCol1Top || !imgCol1Bottom || !imgCol2) {
+  // Accept both 'projectId' (from frontend form) and 'id' for backwards compat
+  const { id, projectId, name, category, liveUrl, imgCol1Top, imgCol1Bottom, imgCol2 } = req.body;
+  const resolvedId = projectId || id;
+  if (!resolvedId || !name || !category || !liveUrl || !imgCol1Top || !imgCol1Bottom || !imgCol2) {
     return res.status(400).json({ error: 'All project fields are required' });
   }
   try {
-    await ProjectModel.create({ projectId: id, name, category, liveUrl, imgCol1Top, imgCol1Bottom, imgCol2 });
+    await ProjectModel.create({ projectId: resolvedId, name, category, liveUrl, imgCol1Top, imgCol1Bottom, imgCol2 });
     res.status(201).json({ message: 'Project added successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
