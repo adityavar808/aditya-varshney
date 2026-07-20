@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const ContactModel = require('../models/contactModel');
 const { contactEmailTemplate } = require('../views/emailTemplate');
 
@@ -14,40 +14,23 @@ const submitContact = async (req, res) => {
     await ContactModel.create({ name, email, message });
     const dateSubmitted = new Date().toLocaleString();
 
-    // 2. Send email notification via Gmail App Password
-    if (
-      process.env.GMAIL_USER &&
-      process.env.GMAIL_PASS &&
-      process.env.GMAIL_PASS !== 'your_gmail_app_password_here'
-    ) {
+    // 2. Send email notification via Resend HTTP API (works on Railway)
+    if (process.env.RESEND_API_KEY && process.env.GMAIL_USER) {
       try {
-        const transporter = nodemailer.createTransport({
-          host: 'smtp.gmail.com',
-          port: 465,
-          secure: true, // SSL — Railway blocks 587/STARTTLS, port 465 works
-          auth: {
-            user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_PASS,
-          },
-          connectionTimeout: 10000,
-          greetingTimeout: 10000,
-        });
-
-        const mailOptions = {
-          from: `"Aditya Portfolio" <${process.env.GMAIL_USER}>`,
-          to: process.env.GMAIL_USER,
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: 'Aditya Portfolio <onboarding@resend.dev>',
+          to: [process.env.GMAIL_USER],
           replyTo: email,
           subject: `📦 [Portfolio Message] - ${name}`,
           html: contactEmailTemplate({ name, email, message, dateSubmitted }),
-        };
-
-        await transporter.sendMail(mailOptions);
+        });
         console.log(`Notification email sent successfully for ${name}.`);
       } catch (mailErr) {
-        console.error('Nodemailer error:', mailErr.message);
+        console.error('Resend error:', mailErr.message);
       }
     } else {
-      console.log('Nodemailer skipped: Gmail credentials not fully configured in .env');
+      console.log('Email skipped: RESEND_API_KEY not configured in env');
     }
 
     res.status(201).json({ success: true, message: 'Message submitted successfully' });
@@ -87,40 +70,23 @@ const sendReply = async (req, res) => {
     return res.status(400).json({ error: 'Recipient email (to), subject, and message are required' });
   }
 
-  if (
-    !process.env.GMAIL_USER ||
-    !process.env.GMAIL_PASS ||
-    process.env.GMAIL_PASS === 'your_gmail_app_password_here'
-  ) {
-    return res.status(500).json({ error: 'SMTP credentials not configured in backend .env' });
+  if (!process.env.RESEND_API_KEY) {
+    return res.status(500).json({ error: 'RESEND_API_KEY not configured in backend env' });
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // SSL — Railway blocks 587/STARTTLS, port 465 works
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-    });
-
-    const mailOptions = {
-      from: `"Aditya Varshney" <${process.env.GMAIL_USER}>`,
-      to,
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: 'Aditya Varshney <onboarding@resend.dev>',
+      to: [to],
       subject,
       text: message,
-    };
-
-    await transporter.sendMail(mailOptions);
+    });
     console.log(`Reply email successfully sent to ${to}`);
-    res.json({ success: true, message: 'Reply sent successfully via SMTP' });
+    res.json({ success: true, message: 'Reply sent successfully via Resend' });
   } catch (error) {
-    console.error('Nodemailer reply error:', error.message);
-    res.status(500).json({ error: `Nodemailer error: ${error.message}` });
+    console.error('Resend reply error:', error.message);
+    res.status(500).json({ error: `Resend error: ${error.message}` });
   }
 };
 
