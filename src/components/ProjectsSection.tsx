@@ -160,36 +160,53 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, totalCards })
         {/* Bottom Row: Two-Column Image Grid */}
         <div className="grid grid-cols-1 md:grid-cols-10 gap-4 sm:gap-6 items-stretch flex-1 overflow-hidden">
           {/* Left Stack (40% width) */}
-          <div className="md:col-span-4 flex flex-col gap-4 sm:gap-6 justify-between">
-            <div className="overflow-hidden rounded-[30px] sm:rounded-[40px] md:rounded-[50px]">
+          <div className="md:col-span-4 flex flex-col gap-4 sm:gap-6">
+            {/* Top thumbnail */}
+            <div
+              className="overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group"
+              style={{ height: 'clamp(140px, 17vw, 240px)' }}
+            >
               <img
                 src={project.imgCol1Top}
-                alt={`${project.name} Details top`}
-                className="w-full object-cover transition-transform duration-500 hover:scale-105"
-                style={{ height: 'clamp(130px, 16vw, 230px)' }}
+                alt={`${project.name} — screenshot 1`}
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
                 loading="lazy"
+                decoding="async"
               />
+              {/* subtle hover shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </div>
-            <div className="overflow-hidden rounded-[30px] sm:rounded-[40px] md:rounded-[50px]">
+            {/* Bottom thumbnail */}
+            <div
+              className="overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group flex-1"
+              style={{ minHeight: 'clamp(170px, 24vw, 360px)' }}
+            >
               <img
                 src={project.imgCol1Bottom}
-                alt={`${project.name} Details bottom`}
-                className="w-full object-cover transition-transform duration-500 hover:scale-105"
-                style={{ height: 'clamp(160px, 22vw, 340px)' }}
+                alt={`${project.name} — screenshot 2`}
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
                 loading="lazy"
+                decoding="async"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </div>
           </div>
 
-          {/* Right Column: Tall Image (60% width) */}
-          <div className="md:col-span-6 overflow-hidden rounded-[30px] sm:rounded-[40px] md:rounded-[50px] relative h-full">
+          {/* Right Column: Tall Hero Image (60% width) */}
+          <div
+            className="md:col-span-6 overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group"
+            style={{ minHeight: 'clamp(320px, 42vw, 620px)' }}
+          >
             <img
               src={project.imgCol2}
-              alt={`${project.name} Hero mock`}
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              style={{ minHeight: 'clamp(306px, 40vw, 594px)' }}
+              alt={`${project.name} — hero`}
+              className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
               loading="lazy"
+              decoding="async"
             />
+            {/* gradient overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           </div>
         </div>
       </motion.div>

@@ -251,6 +251,8 @@ export const AdminPanel: React.FC = () => {
   // Form modals / editing states
   const [editingService, setEditingService] = useState<Partial<Service> | null>(null);
   const [editingProject, setEditingProject] = useState<Partial<Project> | null>(null);
+  // Tracks original projectId when editing an existing project (null = new project)
+  const [originalProjectId, setOriginalProjectId] = useState<string | null>(null);
   const [editingSkill, setEditingSkill] = useState<Partial<Skill> | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<'all' | 'collab' | 'inquiry' | 'feedback'>('all');
@@ -445,8 +447,11 @@ export const AdminPanel: React.FC = () => {
       showToast('All core project fields are required', 'error');
       return;
     }
-    const isNew = !projects.some(p => p.projectId === editingProject.projectId);
-    const url = isNew ? `${API_BASE}/projects` : `${API_BASE}/projects/${editingProject.projectId}`;
+    // Use originalProjectId to determine if this is an edit (not null) or new project (null)
+    const isNew = originalProjectId === null;
+    const url = isNew
+      ? `${API_BASE}/projects`
+      : `${API_BASE}/projects/${originalProjectId}`;
     const method = isNew ? 'POST' : 'PUT';
 
     try {
@@ -461,6 +466,7 @@ export const AdminPanel: React.FC = () => {
       if (!res.ok) throw new Error();
       showToast(`Project card ${isNew ? 'created' : 'updated'}`);
       setEditingProject(null);
+      setOriginalProjectId(null);
       fetchData();
     } catch {
       showToast('Failed to commit project changes', 'error');
@@ -792,16 +798,23 @@ export const AdminPanel: React.FC = () => {
     return (
       <div className="space-y-4 text-left font-sans text-xs">
         <h2 className="text-sm font-black uppercase tracking-widest text-[#00FF00] mb-4 border-b border-white/5 pb-3">
-          {projects.some(p => p.projectId === editingProject.projectId) ? 'EDIT PROJECT NODE' : 'APPEND PROJECT NODE'}
+          {originalProjectId !== null ? 'EDIT PROJECT NODE' : 'APPEND PROJECT NODE'}
         </h2>
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-1">
-            <label className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider mb-2">ID</label>
+            <label className="block text-[8px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+              ID {originalProjectId !== null && <span className="text-gray-600 normal-case">(locked)</span>}
+            </label>
             <input
               type="text"
               value={editingProject.projectId || ''}
-              onChange={(e) => setEditingProject({ ...editingProject, projectId: e.target.value })}
-              className="w-full px-3 py-2.5 bg-black border border-white/10 focus:border-[#00FF00] rounded-xl text-white font-mono focus:outline-none"
+              onChange={(e) => originalProjectId === null && setEditingProject({ ...editingProject, projectId: e.target.value })}
+              readOnly={originalProjectId !== null}
+              className={`w-full px-3 py-2.5 bg-black border rounded-xl text-white font-mono focus:outline-none ${
+                originalProjectId !== null
+                  ? 'border-white/5 text-gray-600 cursor-not-allowed'
+                  : 'border-white/10 focus:border-[#00FF00]'
+              }`}
               placeholder="01"
             />
           </div>
@@ -865,7 +878,7 @@ export const AdminPanel: React.FC = () => {
             Save Project
           </button>
           <button
-            onClick={() => setEditingProject(null)}
+            onClick={() => { setEditingProject(null); setOriginalProjectId(null); }}
             className="px-5 py-3 border border-white/10 hover:border-white/20 rounded-xl uppercase tracking-widest text-[9px] text-gray-500 hover:text-white transition-all font-bold"
           >
             Cancel
@@ -1709,6 +1722,7 @@ export const AdminPanel: React.FC = () => {
                         <button
                           onClick={() => {
                             const nextId = String(projects.length + 1).padStart(2, '0');
+                            setOriginalProjectId(null); // null = new project
                             setEditingProject({ projectId: nextId, name: '', category: '', liveUrl: '', imgCol1Top: '', imgCol1Bottom: '', imgCol2: '' });
                           }}
                           className="flex items-center gap-1.5 px-3.5 py-1.5 border border-[#00FF00]/20 hover:bg-[#00FF00]/5 rounded-lg text-[#00FF00] text-[8px] font-bold uppercase tracking-wider transition-all"
@@ -1739,7 +1753,10 @@ export const AdminPanel: React.FC = () => {
 
                             <div className="flex gap-2 pt-2 border-t border-white/[0.04]">
                               <button
-                                onClick={() => setEditingProject(project)}
+                                onClick={() => {
+                                  setOriginalProjectId(project.projectId); // store original ID for PUT routing
+                                  setEditingProject(project);
+                                }}
                                 className="flex-grow py-1.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/10 text-white text-[8px] font-bold uppercase tracking-wider transition-all"
                               >
                                 Modify Card
