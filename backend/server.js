@@ -8,15 +8,8 @@ try {
 }
 
 const express = require('express');
-const cors = require('cors');
+const cors    = require('cors');
 const { connectDB } = require('./config/db');
-
-// ───── Models (for seeding) ─────
-const AboutModel   = require('./models/aboutModel');
-const ServiceModel = require('./models/serviceModel');
-const ProjectModel = require('./models/projectModel');
-const SkillModel   = require('./models/skillModel');
-const AdibotModel  = require('./models/adibotModel');
 
 // ───── Routes ─────
 const authRoutes    = require('./routes/authRoutes');
@@ -36,35 +29,25 @@ app.use(cors());
 app.use(express.json());
 
 // ───── Route Mounting ─────
-app.use('/api/auth',    authRoutes);
-app.use('/api/about',   aboutRoutes);
+app.use('/api/auth',     authRoutes);
+app.use('/api/about',    aboutRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/projects', projectRoutes);
-app.use('/api/skills',  skillRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/adibot',  adibotRoutes);
-app.use('/api/upload',  uploadRouter);   // POST  — upload image → GridFS
-app.use('/api/images',  imageRouter);    // GET   — stream image from GridFS
+app.use('/api/skills',   skillRoutes);
+app.use('/api/contact',  contactRoutes);
+app.use('/api/adibot',   adibotRoutes);
+app.use('/api/upload',   uploadRouter);  // POST — upload image → GridFS
+app.use('/api/images',   imageRouter);   // GET  — stream image from GridFS
 
-// ───── Database Connection & Seeding ─────
-const seedDatabase = async () => {
-  await AboutModel.seed();
-  await ServiceModel.seed();
-  await ProjectModel.seed();
-  await SkillModel.seed();
-  await AdibotModel.seed();
-  console.log('Database seeded successfully (empty collections populated).');
-};
-
+// ───── Start Server ─────
 const startServer = async () => {
   try {
     await connectDB();
-    await seedDatabase();
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error('Fatal: Failed to start database/server.', err);
+    console.error('Fatal: failed to start server.', err);
     process.exit(1);
   }
 };
