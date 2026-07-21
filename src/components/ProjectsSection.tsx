@@ -161,30 +161,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, totalCards })
         <div className="grid grid-cols-1 md:grid-cols-10 gap-4 sm:gap-6 items-stretch flex-1 overflow-hidden">
           {/* Left Stack (40% width) */}
           <div className="md:col-span-4 flex flex-col gap-4 sm:gap-6">
+
             {/* Top thumbnail */}
-            <div
-              className="overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group"
-              style={{ height: 'clamp(140px, 17vw, 240px)' }}
-            >
+            <div className="overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group">
               <img
                 src={project.imgCol1Top}
-                alt={`${project.name} — screenshot 1`}
-                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
+                alt={`${project.name} screenshot 1`}
+                className="w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
+                style={{ height: 'clamp(140px, 17vw, 240px)', display: 'block' }}
                 loading="lazy"
                 decoding="async"
               />
-              {/* subtle hover shimmer */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             </div>
+
             {/* Bottom thumbnail */}
-            <div
-              className="overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group flex-1"
-              style={{ minHeight: 'clamp(170px, 24vw, 360px)' }}
-            >
+            <div className="overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group">
               <img
                 src={project.imgCol1Bottom}
-                alt={`${project.name} — screenshot 2`}
-                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
+                alt={`${project.name} screenshot 2`}
+                className="w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
+                style={{ height: 'clamp(170px, 24vw, 360px)', display: 'block' }}
                 loading="lazy"
                 decoding="async"
               />
@@ -193,19 +190,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, totalCards })
           </div>
 
           {/* Right Column: Tall Hero Image (60% width) */}
-          <div
-            className="md:col-span-6 overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group"
-            style={{ minHeight: 'clamp(320px, 42vw, 620px)' }}
-          >
+          <div className="md:col-span-6 overflow-hidden rounded-[24px] sm:rounded-[32px] md:rounded-[40px] bg-[#1a1a1a] relative group">
             <img
               src={project.imgCol2}
-              alt={`${project.name} — hero`}
-              className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+              alt={`${project.name} hero`}
+              className="w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+              style={{ height: 'clamp(320px, 42vw, 620px)', display: 'block' }}
               loading="lazy"
               decoding="async"
             />
-            {/* gradient overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/30 pointer-events-none" />
+            {/* depth gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/25 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           </div>
         </div>
