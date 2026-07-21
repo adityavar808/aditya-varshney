@@ -33,6 +33,60 @@ interface MarqueeRowProps {
   speed?: number;
 }
 
+const MarqueeCard: React.FC<{ item: ImageItem; cardWidth: string; cardHeight: string }> = ({ item, cardWidth, cardHeight }) => {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <a
+      href={item.project.liveUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative shrink-0 rounded-[20px] overflow-hidden bg-[#161618] block group"
+      style={{ width: cardWidth, height: cardHeight }}
+    >
+      {/* Image or Fallback */}
+      {!imgError && item.url ? (
+        <img
+          src={item.url}
+          alt={item.project.name}
+          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.07]"
+          loading="lazy"
+          decoding="async"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-[#1c1c20] to-[#0c0c0e] border border-white/5">
+          <span className="text-[10px] text-[#00FF00] font-mono tracking-widest uppercase mb-1">
+            {item.project.category}
+          </span>
+          <span className="text-xs font-bold text-white uppercase tracking-wider line-clamp-1">
+            {item.project.name}
+          </span>
+          <span className="text-[8px] text-gray-500 uppercase tracking-widest mt-2 font-mono">
+            [Re-upload Image in Admin]
+          </span>
+        </div>
+      )}
+
+      {/* Hover info overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-400 flex flex-col justify-end p-4 pointer-events-none">
+        <span className="text-[#D7E2EA]/50 text-[9px] uppercase tracking-[0.2em] font-light mb-0.5">
+          {item.project.category}
+        </span>
+        <span className="text-white text-sm font-bold uppercase tracking-wide leading-tight">
+          {item.project.name}
+        </span>
+        <span className="mt-2 text-[9px] text-[#00FF00] uppercase tracking-widest font-light flex items-center gap-1">
+          Live Project ↗
+        </span>
+      </div>
+
+      {/* Subtle border */}
+      <div className="absolute inset-0 rounded-[20px] border border-white/[0.06] pointer-events-none" />
+    </a>
+  );
+};
+
 const MarqueeRow: React.FC<MarqueeRowProps> = ({
   images,
   direction,
@@ -53,39 +107,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({
         }}
       >
         {filled.map((item, i) => (
-          <a
-            key={i}
-            href={item.project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative shrink-0 rounded-[20px] overflow-hidden bg-[#111] block group"
-            style={{ width: cardWidth, height: cardHeight }}
-          >
-            {/* Image */}
-            <img
-              src={item.url}
-              alt={item.project.name}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.07]"
-              loading="lazy"
-              decoding="async"
-            />
-
-            {/* Hover info overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-400 flex flex-col justify-end p-4 pointer-events-none">
-              <span className="text-[#D7E2EA]/50 text-[9px] uppercase tracking-[0.2em] font-light mb-0.5">
-                {item.project.category}
-              </span>
-              <span className="text-white text-sm font-bold uppercase tracking-wide leading-tight">
-                {item.project.name}
-              </span>
-              <span className="mt-2 text-[9px] text-[#D7E2EA]/40 uppercase tracking-widest font-light flex items-center gap-1">
-                Live ↗
-              </span>
-            </div>
-
-            {/* Subtle border */}
-            <div className="absolute inset-0 rounded-[20px] border border-white/[0.06] pointer-events-none" />
-          </a>
+          <MarqueeCard key={i} item={item} cardWidth={cardWidth} cardHeight={cardHeight} />
         ))}
       </div>
     </div>
