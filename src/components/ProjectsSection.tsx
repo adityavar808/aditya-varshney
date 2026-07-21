@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { LiveProjectButton } from './LiveProjectButton';
 import { FadeIn } from './FadeIn';
 
 interface Project {
@@ -11,125 +13,100 @@ interface Project {
   imgCol2: string;
 }
 
-interface ImageItem {
+// Helper to build array for smooth looping marquee
+function buildMarqueeArray(imageUrls: string[], minItems: number = 6): string[] {
+  const valid = imageUrls.filter(Boolean);
+  if (valid.length === 0) return [];
+  const factor = Math.max(1, Math.ceil(minItems / valid.length));
+  const base = Array(factor).fill(valid).flat();
+  return [...base, ...base]; // doubled for seamless -50% translate
+}
+
+// ─── Single Card Marquee Item ────────────────────────────────────────────────
+const MarqueeImageCard: React.FC<{
   url: string;
-  project: Project;
-}
-
-// Repeat the array until we have enough items, then double for seamless loop
-function buildMarqueeRow(images: ImageItem[]): ImageItem[] {
-  if (images.length === 0) return [];
-  const factor = Math.max(1, Math.ceil(6 / images.length));
-  const base = Array(factor).fill(images).flat() as ImageItem[];
-  return [...base, ...base]; // doubled → seamless -50% translate trick
-}
-
-// ─── Single Marquee Row ──────────────────────────────────────────────────────
-interface MarqueeRowProps {
-  images: ImageItem[];
-  direction: 'left' | 'right';
+  altText: string;
+  cardWidth: string;
   cardHeight: string;
-  cardWidth?: string;
-  speed?: number;
-}
-
-const MarqueeCard: React.FC<{ item: ImageItem; cardWidth: string; cardHeight: string }> = ({ item, cardWidth, cardHeight }) => {
+}> = ({ url, altText, cardWidth, cardHeight }) => {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <a
-      href={item.project.liveUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="relative shrink-0 rounded-[20px] overflow-hidden bg-[#161618] block group"
+    <div
+      className="relative shrink-0 rounded-[18px] sm:rounded-[22px] overflow-hidden bg-[#161618] border border-white/10 group select-none"
       style={{ width: cardWidth, height: cardHeight }}
     >
-      {/* Image or Fallback */}
-      {!imgError && item.url ? (
+      {!imgError && url ? (
         <img
-          src={item.url}
-          alt={item.project.name}
-          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.07]"
+          src={url}
+          alt={altText}
+          className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.06]"
           loading="lazy"
           decoding="async"
           onError={() => setImgError(true)}
         />
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-[#1c1c20] to-[#0c0c0e] border border-white/5">
-          <span className="text-[10px] text-[#00FF00] font-mono tracking-widest uppercase mb-1">
-            {item.project.category}
+        <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-gradient-to-br from-[#1e1e24] to-[#0d0d10]">
+          <span className="text-[9px] text-[#00FF00] font-mono uppercase tracking-widest">
+            {altText}
           </span>
-          <span className="text-xs font-bold text-white uppercase tracking-wider line-clamp-1">
-            {item.project.name}
-          </span>
-          <span className="text-[8px] text-gray-500 uppercase tracking-widest mt-2 font-mono">
-            [Re-upload Image in Admin]
+          <span className="text-[7px] text-gray-500 font-mono uppercase tracking-wider mt-1">
+            [No Image Preview]
           </span>
         </div>
       )}
-
-      {/* Hover info overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-400 flex flex-col justify-end p-4 pointer-events-none">
-        <span className="text-[#D7E2EA]/50 text-[9px] uppercase tracking-[0.2em] font-light mb-0.5">
-          {item.project.category}
-        </span>
-        <span className="text-white text-sm font-bold uppercase tracking-wide leading-tight">
-          {item.project.name}
-        </span>
-        <span className="mt-2 text-[9px] text-[#00FF00] uppercase tracking-widest font-light flex items-center gap-1">
-          Live Project ↗
-        </span>
-      </div>
-
-      {/* Subtle border */}
-      <div className="absolute inset-0 rounded-[20px] border border-white/[0.06] pointer-events-none" />
-    </a>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+    </div>
   );
 };
 
-const MarqueeRow: React.FC<MarqueeRowProps> = ({
-  images,
+// ─── Single Row in Card Carousel ─────────────────────────────────────────────
+interface CardMarqueeRowProps {
+  imageUrls: string[];
+  altText: string;
+  direction: 'left' | 'right';
+  cardHeight: string;
+  cardWidth: string;
+  speed?: number;
+}
+
+const CardMarqueeRow: React.FC<CardMarqueeRowProps> = ({
+  imageUrls,
+  altText,
   direction,
   cardHeight,
-  cardWidth = '300px',
-  speed = 35,
+  cardWidth,
+  speed = 30,
 }) => {
-  const filled = buildMarqueeRow(images);
+  const items = buildMarqueeArray(imageUrls, 6);
   const animName = direction === 'left' ? 'marquee-to-left' : 'marquee-to-right';
 
+  if (items.length === 0) return null;
+
   return (
-    <div className="overflow-hidden w-full py-2">
+    <div className="overflow-hidden w-full py-1">
       <div
-        className="flex gap-4 group/row"
+        className="flex gap-3.5"
         style={{
           width: 'max-content',
           animation: `${animName} ${speed}s linear infinite`,
         }}
       >
-        {filled.map((item, i) => (
-          <MarqueeCard key={i} item={item} cardWidth={cardWidth} cardHeight={cardHeight} />
+        {items.map((url, idx) => (
+          <MarqueeImageCard
+            key={idx}
+            url={url}
+            altText={altText}
+            cardWidth={cardWidth}
+            cardHeight={cardHeight}
+          />
         ))}
       </div>
     </div>
   );
 };
 
-// ─── Loading Skeleton ─────────────────────────────────────────────────────────
-const SkeletonRow: React.FC<{ height: string }> = ({ height }) => (
-  <div className="overflow-hidden w-full py-2">
-    <div className="flex gap-4">
-      {[1, 2, 3, 4, 5].map(i => (
-        <div
-          key={i}
-          className="shrink-0 rounded-[20px] bg-white/[0.04] animate-pulse"
-          style={{ width: '300px', height }}
-        />
-      ))}
-    </div>
-  </div>
-);
-
-// ─── Main Section ─────────────────────────────────────────────────────────────
+// ─── Main Projects Section ───────────────────────────────────────────────────
 export const ProjectsSection: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,32 +116,34 @@ export const ProjectsSection: React.FC = () => {
       .then(res => res.json())
       .then((data: any[]) => {
         if (Array.isArray(data)) {
-          setProjects(data.map(item => ({
-            id:           item.projectId,
-            name:         item.name,
-            category:     item.category,
-            liveUrl:      item.liveUrl,
-            imgCol1Top:   item.imgCol1Top,
-            imgCol1Bottom: item.imgCol1Bottom,
-            imgCol2:      item.imgCol2,
-          })));
+          setProjects(
+            data.map(item => ({
+              id:            item.projectId,
+              name:          item.name,
+              category:      item.category,
+              liveUrl:       item.liveUrl,
+              imgCol1Top:    item.imgCol1Top,
+              imgCol1Bottom: item.imgCol1Bottom,
+              imgCol2:       item.imgCol2,
+            }))
+          );
         }
       })
       .catch(err => console.error('Failed to fetch projects:', err))
       .finally(() => setLoading(false));
   }, []);
 
-  // Distribute images across 3 rows
-  const row1: ImageItem[] = projects.map(p => ({ url: p.imgCol1Top,    project: p }));
-  const row2: ImageItem[] = projects.map(p => ({ url: p.imgCol2,       project: p }));
-  const row3: ImageItem[] = projects.map(p => ({ url: p.imgCol1Bottom, project: p }));
+  // Collect all images across all projects so each project card can cycle through full portfolio images
+  const allCol1Top    = projects.map(p => p.imgCol1Top).filter(Boolean);
+  const allCol2       = projects.map(p => p.imgCol2).filter(Boolean);
+  const allCol1Bottom = projects.map(p => p.imgCol1Bottom).filter(Boolean);
 
   return (
     <section
       id="projects"
-      className="bg-[#0C0C0C] text-[#D7E2EA] rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] -mt-10 sm:-mt-12 md:-mt-14 pt-24 pb-32 relative z-10 select-none overflow-hidden"
+      className="bg-[#0C0C0C] text-[#D7E2EA] rounded-t-[40px] sm:rounded-t-[50px] md:rounded-t-[60px] -mt-10 sm:-mt-12 md:-mt-14 pt-24 pb-32 px-5 sm:px-8 md:px-10 relative z-10 select-none overflow-visible"
     >
-      {/* ── Marquee keyframe animations ── */}
+      {/* CSS Keyframe animations for Marquee */}
       <style>{`
         @keyframes marquee-to-left {
           0%   { transform: translateX(0); }
@@ -174,66 +153,163 @@ export const ProjectsSection: React.FC = () => {
           0%   { transform: translateX(-50%); }
           100% { transform: translateX(0); }
         }
-        /* Pause all rows on hover */
-        [data-marquee]:hover > div {
+        [data-[#0C0C0C]]:hover [data-card-marquee] {
           animation-play-state: paused;
         }
       `}</style>
 
-      {/* Heading */}
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-10 mb-14">
+      <div className="max-w-6xl mx-auto flex flex-col items-center">
+        {/* Section Heading */}
         <FadeIn delay={0} y={40} duration={0.8}>
           <h2
-            className="hero-heading font-black uppercase text-center"
+            className="hero-heading font-black uppercase text-center mb-16 sm:mb-20 md:mb-24"
             style={{ fontSize: 'clamp(3rem, 12vw, 160px)' }}
           >
             Project
           </h2>
         </FadeIn>
+
+        {/* Sticky Stacking Cards Container */}
+        <div className="w-full flex flex-col items-center gap-12 sm:gap-16">
+          {loading ? (
+            [1, 2].map(i => (
+              <div
+                key={i}
+                className="w-full bg-[#0C0C0C] border-2 border-[#D7E2EA]/20 rounded-[40px] p-6 md:p-8 animate-pulse"
+              >
+                <div className="h-10 bg-white/5 rounded-xl w-1/3 mb-6" />
+                <div className="space-y-3">
+                  <div className="h-28 bg-white/5 rounded-2xl" />
+                  <div className="h-36 bg-white/5 rounded-2xl" />
+                  <div className="h-28 bg-white/5 rounded-2xl" />
+                </div>
+              </div>
+            ))
+          ) : projects.length === 0 ? (
+            <p className="text-[#D7E2EA]/40 text-sm uppercase tracking-widest font-light py-16 text-center">
+              No projects registered yet — add them via the Admin panel.
+            </p>
+          ) : (
+            projects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                totalCards={projects.length}
+                allCol1Top={allCol1Top}
+                allCol2={allCol2}
+                allCol1Bottom={allCol1Bottom}
+              />
+            ))
+          )}
+        </div>
       </div>
-
-      {/* ── Carousel Rows ── */}
-      {loading ? (
-        <div className="flex flex-col gap-4 px-5">
-          <SkeletonRow height="170px" />
-          <SkeletonRow height="230px" />
-          <SkeletonRow height="170px" />
-        </div>
-      ) : projects.length === 0 ? (
-        <p className="text-[#D7E2EA]/30 text-sm uppercase tracking-widest font-light py-20 text-center">
-          No projects yet — add them via the Admin panel.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-4" data-marquee>
-          {/* Row 1 — scrolls LEFT → */}
-          <MarqueeRow
-            images={row1}
-            direction="left"
-            cardHeight="170px"
-            cardWidth="290px"
-            speed={38}
-          />
-
-          {/* Row 2 — scrolls RIGHT ← (taller, slightly faster for rhythm) */}
-          <MarqueeRow
-            images={row2}
-            direction="right"
-            cardHeight="240px"
-            cardWidth="340px"
-            speed={28}
-          />
-
-          {/* Row 3 — scrolls LEFT → */}
-          <MarqueeRow
-            images={row3}
-            direction="left"
-            cardHeight="170px"
-            cardWidth="290px"
-            speed={42}
-          />
-        </div>
-      )}
     </section>
+  );
+};
+
+// ─── Individual Project Card Component ───────────────────────────────────────
+interface ProjectCardProps {
+  project: Project;
+  index: number;
+  totalCards: number;
+  allCol1Top: string[];
+  allCol2: string[];
+  allCol1Bottom: string[];
+}
+
+const ProjectCard: React.FC<ProjectCardProps> = ({
+  project,
+  index,
+  totalCards,
+  allCol1Top,
+  allCol2,
+  allCol1Bottom,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const targetScale = 1 - (totalCards - 1 - index) * 0.03;
+  const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale]);
+  const stickyTopOffset = index * 28;
+
+  // Project-specific images combined with all projects images for rich carousel
+  const row1Images = [project.imgCol1Top, ...allCol1Top.filter(u => u !== project.imgCol1Top)];
+  const row2Images = [project.imgCol2, ...allCol2.filter(u => u !== project.imgCol2)];
+  const row3Images = [project.imgCol1Bottom, ...allCol1Bottom.filter(u => u !== project.imgCol1Bottom)];
+
+  return (
+    <div
+      ref={containerRef}
+      className="h-[88vh] w-full sticky top-24 md:top-32 flex justify-center items-start overflow-visible"
+      style={{ top: `calc(${stickyTopOffset}px + 6rem)` }}
+    >
+      <motion.div
+        style={{ scale }}
+        className="w-full bg-[#0C0C0C] border-2 border-[#D7E2EA] rounded-[36px] sm:rounded-[48px] md:rounded-[56px] p-4 sm:p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-hidden max-h-[82vh]"
+      >
+        {/* Top Row: Meta & CTA */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6 shrink-0">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <span
+              className="font-black text-[#D7E2EA] select-none leading-none"
+              style={{ fontSize: 'clamp(2.2rem, 6vw, 84px)' }}
+            >
+              {project.id}
+            </span>
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] sm:text-xs uppercase tracking-widest text-[#D7E2EA]/60 font-light mb-0.5">
+                {project.category}
+              </span>
+              <h3
+                className="font-medium uppercase leading-tight text-[#D7E2EA] tracking-wide"
+                style={{ fontSize: 'clamp(1rem, 2.2vw, 1.9rem)' }}
+              >
+                {project.name}
+              </h3>
+            </div>
+          </div>
+          <LiveProjectButton url={project.liveUrl} />
+        </div>
+
+        {/* Bottom Row: 3-Row Image Marquee Carousel (Inside Card) */}
+        <div className="w-full overflow-hidden flex flex-col gap-2.5 rounded-[24px] sm:rounded-[32px] bg-[#111113] p-2.5 sm:p-3.5 border border-white/5 group/marquee">
+          {/* Row 1 -> Right */}
+          <CardMarqueeRow
+            imageUrls={row1Images}
+            altText={project.name}
+            direction="right"
+            cardHeight="clamp(100px, 12vw, 150px)"
+            cardWidth="clamp(180px, 22vw, 290px)"
+            speed={35}
+          />
+
+          {/* Row 2 <- Left (Taller) */}
+          <CardMarqueeRow
+            imageUrls={row2Images}
+            altText={project.name}
+            direction="left"
+            cardHeight="clamp(120px, 15vw, 190px)"
+            cardWidth="clamp(220px, 26vw, 340px)"
+            speed={25}
+          />
+
+          {/* Row 3 -> Right */}
+          <CardMarqueeRow
+            imageUrls={row3Images}
+            altText={project.name}
+            direction="right"
+            cardHeight="clamp(100px, 12vw, 150px)"
+            cardWidth="clamp(180px, 22vw, 290px)"
+            speed={40}
+          />
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
