@@ -18,7 +18,6 @@ function getUpload() {
 
   const storage = new GridFsStorage({
     url: process.env.MONGODB_URI,
-    options: { useNewUrlParser: true, useUnifiedTopology: true },
     file: (req, file) => {
       const allowed = /jpeg|jpg|png|webp|gif/;
       const extOk   = allowed.test(file.originalname.toLowerCase().split('.').pop());
