@@ -13,44 +13,15 @@ interface Project {
   imgCol2: string;
 }
 
-const DEFAULT_PROJECTS: Project[] = [
-  {
-    id: "01",
-    name: "Nextlevel Studio",
-    category: "Client / AI Product Design",
-    liveUrl: "https://motionsites.ai",
-    imgCol1Top: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055344_5eff02e0-87a5-41ce-b64f-eb08da8f33db.png&w=1280&q=85",
-    imgCol1Bottom: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055431_11d841fd-8b41-46a5-82e4-b04f2407a7d8.png&w=1280&q=85",
-    imgCol2: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055451_e317bf2d-28d4-48cc-86b0-6f72f25b6327.png&w=1280&q=85"
-  },
-  {
-    id: "02",
-    name: "Aura Brand Identity",
-    category: "Personal / Agent Intelligence",
-    liveUrl: "https://motionsites.ai",
-    imgCol1Top: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055654_911201c5-36d9-4bc6-bac7-331adfce159f.png&w=1280&q=85",
-    imgCol1Bottom: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055723_5ceda0b8-d9c2-4665-b2e3-83ba19ba76d1.png&w=1280&q=85",
-    imgCol2: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055753_adc5dcbd-a8e6-49c0-b43a-9b030d835cea.png&w=1280&q=85"
-  },
-  {
-    id: "03",
-    name: "Solaris Digital",
-    category: "Client / Fullstack Web Platform",
-    liveUrl: "https://motionsites.ai",
-    imgCol1Top: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055759_963cfb0b-4bd1-4b0f-9d0a-09bd6cf95b2f.png&w=1280&q=85",
-    imgCol1Bottom: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_060108_438f781a-9846-4dcc-89ab-c4e6cb830f5b.png&w=1280&q=85",
-    imgCol2: "https://images.higgs.ai/?default=1&output=webp&url=https%3A%2F%2Fd8j0ntlcm91z4.cloudfront.net%2Fuser_38xzZboKViGWJOttwIXH07lWA1P%2Fhf_20260412_055818_9d062121-ad7e-46b9-999a-1a6a692ef1ee.png&w=1280&q=85"
-  }
-];
-
 export const ProjectsSection: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>(DEFAULT_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/projects`)
       .then(res => res.json())
       .then((data: any[]) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           const formatted = data.map(item => ({
             id: item.projectId,
             name: item.name,
@@ -63,7 +34,8 @@ export const ProjectsSection: React.FC = () => {
           setProjects(formatted);
         }
       })
-      .catch(err => console.log('Projects API fallback:', err));
+      .catch(err => console.error('Failed to fetch projects:', err))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -84,14 +56,34 @@ export const ProjectsSection: React.FC = () => {
 
         {/* Sticky Stacking Cards Container */}
         <div className="w-full flex flex-col items-center gap-12 sm:gap-16">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              totalCards={projects.length}
-            />
-          ))}
+          {loading ? (
+            // Loading skeleton
+            [1, 2].map(i => (
+              <div key={i} className="w-full border-2 border-[#D7E2EA]/10 rounded-[40px] p-6 md:p-8 animate-pulse">
+                <div className="h-8 bg-white/5 rounded-xl w-1/3 mb-6" />
+                <div className="grid grid-cols-10 gap-4" style={{ height: 'clamp(320px, 42vw, 500px)' }}>
+                  <div className="col-span-4 flex flex-col gap-4">
+                    <div className="flex-1 bg-white/5 rounded-[24px]" />
+                    <div className="flex-1 bg-white/5 rounded-[24px]" />
+                  </div>
+                  <div className="col-span-6 bg-white/5 rounded-[24px]" />
+                </div>
+              </div>
+            ))
+          ) : projects.length === 0 ? (
+            <p className="text-[#D7E2EA]/40 text-sm uppercase tracking-widest font-light py-16">
+              No projects yet — add them via the Admin panel.
+            </p>
+          ) : (
+            projects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                totalCards={projects.length}
+              />
+            ))
+          )}
         </div>
       </div>
     </section>
