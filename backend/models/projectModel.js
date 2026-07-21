@@ -5,9 +5,10 @@ const projectSchema = new mongoose.Schema({
   name:         { type: String, required: true },
   category:     { type: String, required: true },
   liveUrl:      { type: String, required: true },
-  imgCol1Top:   { type: String, required: true },
-  imgCol1Bottom:{ type: String, required: true },
-  imgCol2:      { type: String, required: true }
+  images:       [{ type: String }],
+  imgCol1Top:   { type: String },
+  imgCol1Bottom:{ type: String },
+  imgCol2:      { type: String }
 });
 
 const Project = mongoose.model('Project', projectSchema);

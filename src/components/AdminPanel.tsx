@@ -23,9 +23,10 @@ interface Project {
   name: string;
   category: string;
   liveUrl: string;
-  imgCol1Top: string;
-  imgCol1Bottom: string;
-  imgCol2: string;
+  images?: string[];
+  imgCol1Top?: string;
+  imgCol1Bottom?: string;
+  imgCol2?: string;
 }
 
 interface Skill {
@@ -852,23 +853,80 @@ export const AdminPanel: React.FC = () => {
           />
         </div>
 
-        <ImageUploadField 
-          label="Col 1 Top Thumbnail URL" 
-          value={editingProject.imgCol1Top || ''} 
-          onChange={(val) => setEditingProject({ ...editingProject, imgCol1Top: val })}
-        />
+        {/* Dynamic Unlimited Image Upload Fields */}
+        <div className="space-y-3 pt-2">
+          <label className="block text-[8px] font-bold text-[#00FF00] uppercase tracking-wider">
+            Project Gallery Images ({(() => {
+              const raw = editingProject.images && editingProject.images.length > 0
+                ? editingProject.images
+                : [editingProject.imgCol1Top, editingProject.imgCol2, editingProject.imgCol1Bottom];
+              return raw.filter(Boolean).length;
+            })()} Total)
+          </label>
+          {(() => {
+            const raw = editingProject.images && editingProject.images.length > 0
+              ? editingProject.images
+              : [editingProject.imgCol1Top, editingProject.imgCol2, editingProject.imgCol1Bottom];
+            const currentImgs: string[] = raw.map(u => u || '');
+            const safeImgs: string[] = currentImgs.length > 0 ? currentImgs : [''];
 
-        <ImageUploadField 
-          label="Col 1 Bottom Thumbnail URL" 
-          value={editingProject.imgCol1Bottom || ''} 
-          onChange={(val) => setEditingProject({ ...editingProject, imgCol1Bottom: val })}
-        />
+            return (
+              <div className="space-y-3">
+                {safeImgs.map((imgUrl, idx) => (
+                  <div key={idx} className="relative group/img">
+                    <ImageUploadField
+                      label={`Gallery Image #${idx + 1}`}
+                      value={imgUrl}
+                      onChange={(newUrl) => {
+                        const updated = [...safeImgs];
+                        updated[idx] = newUrl;
+                        setEditingProject({
+                          ...editingProject,
+                          images: updated,
+                          imgCol1Top: updated[0] || '',
+                          imgCol2: updated[1] || '',
+                          imgCol1Bottom: updated[2] || ''
+                        });
+                      }}
+                    />
+                    {safeImgs.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = safeImgs.filter((_, i) => i !== idx);
+                          setEditingProject({
+                            ...editingProject,
+                            images: updated,
+                            imgCol1Top: updated[0] || '',
+                            imgCol2: updated[1] || '',
+                            imgCol1Bottom: updated[2] || ''
+                          });
+                        }}
+                        className="absolute top-0 right-0 p-1 text-red-500 hover:text-red-400 text-[8px] font-bold uppercase tracking-wider"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
 
-        <ImageUploadField 
-          label="Col 2 Main Aspect URL" 
-          value={editingProject.imgCol2 || ''} 
-          onChange={(val) => setEditingProject({ ...editingProject, imgCol2: val })}
-        />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = [...safeImgs, ''];
+                    setEditingProject({
+                      ...editingProject,
+                      images: updated
+                    });
+                  }}
+                  className="w-full py-2 border border-dashed border-[#00FF00]/40 hover:border-[#00FF00] hover:bg-[#00FF00]/10 text-[#00FF00] rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Another Image
+                </button>
+              </div>
+            );
+          })()}
+        </div>
 
         <div className="flex gap-3 mt-6 pt-4 border-t border-white/5">
           <button
@@ -1745,10 +1803,13 @@ export const AdminPanel: React.FC = () => {
                               <span className="text-gray-600 text-[8px] font-mono">[ID_{project.projectId}]</span>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-2 rounded-lg overflow-hidden h-14 bg-black/60 p-1 border border-white/5">
-                              <img src={project.imgCol1Top} alt="D1" className="w-full h-full object-cover rounded" />
-                              <img src={project.imgCol1Bottom} alt="D2" className="w-full h-full object-cover rounded" />
-                              <img src={project.imgCol2} alt="D3" className="w-full h-full object-cover rounded" />
+                            <div className="flex gap-2 rounded-lg overflow-x-auto h-14 bg-black/60 p-1 border border-white/5">
+                              {(project.images && project.images.length > 0
+                                ? project.images
+                                : [project.imgCol1Top, project.imgCol2, project.imgCol1Bottom].filter(Boolean)
+                              ).map((imgUrl, i) => (
+                                <img key={i} src={imgUrl} alt={`D${i+1}`} className="h-full w-14 object-cover rounded shrink-0" />
+                              ))}
                             </div>
 
                             <div className="flex gap-2 pt-2 border-t border-white/[0.04]">

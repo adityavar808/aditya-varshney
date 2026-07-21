@@ -8,9 +8,10 @@ interface Project {
   name: string;
   category: string;
   liveUrl: string;
-  imgCol1Top: string;
-  imgCol1Bottom: string;
-  imgCol2: string;
+  images?: string[];
+  imgCol1Top?: string;
+  imgCol1Bottom?: string;
+  imgCol2?: string;
 }
 
 // Helper to build array for smooth looping marquee
@@ -122,6 +123,9 @@ export const ProjectsSection: React.FC = () => {
               name:          item.name,
               category:      item.category,
               liveUrl:       item.liveUrl,
+              images:        Array.isArray(item.images) && item.images.length > 0
+                ? item.images
+                : [item.imgCol1Top, item.imgCol2, item.imgCol1Bottom].filter(Boolean),
               imgCol1Top:    item.imgCol1Top,
               imgCol1Bottom: item.imgCol1Bottom,
               imgCol2:       item.imgCol2,
@@ -132,11 +136,6 @@ export const ProjectsSection: React.FC = () => {
       .catch(err => console.error('Failed to fetch projects:', err))
       .finally(() => setLoading(false));
   }, []);
-
-  // Collect all images across all projects so each project card can cycle through full portfolio images
-  const allCol1Top    = projects.map(p => p.imgCol1Top).filter(Boolean);
-  const allCol2       = projects.map(p => p.imgCol2).filter(Boolean);
-  const allCol1Bottom = projects.map(p => p.imgCol1Bottom).filter(Boolean);
 
   return (
     <section
@@ -196,9 +195,6 @@ export const ProjectsSection: React.FC = () => {
                 project={project}
                 index={index}
                 totalCards={projects.length}
-                allCol1Top={allCol1Top}
-                allCol2={allCol2}
-                allCol1Bottom={allCol1Bottom}
               />
             ))
           )}
@@ -213,18 +209,12 @@ interface ProjectCardProps {
   project: Project;
   index: number;
   totalCards: number;
-  allCol1Top: string[];
-  allCol2: string[];
-  allCol1Bottom: string[];
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   index,
   totalCards,
-  allCol1Top,
-  allCol2,
-  allCol1Bottom,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -237,10 +227,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const scale = useTransform(scrollYProgress, [0, 1], [1, targetScale]);
   const stickyTopOffset = index * 28;
 
-  // Project-specific images combined with all projects images for rich carousel
-  const row1Images = [project.imgCol1Top, ...allCol1Top.filter(u => u !== project.imgCol1Top)];
-  const row2Images = [project.imgCol2, ...allCol2.filter(u => u !== project.imgCol2)];
-  const row3Images = [project.imgCol1Bottom, ...allCol1Bottom.filter(u => u !== project.imgCol1Bottom)];
+  // Project-specific images array
+  const pImages = (project.images && project.images.length > 0)
+    ? project.images.filter(Boolean)
+    : [project.imgCol1Top, project.imgCol2, project.imgCol1Bottom].filter(Boolean) as string[];
+
+  // Distribute project's images across the 3 carousel rows
+  let row1Images = pImages.filter((_, i) => i % 3 === 0);
+  let row2Images = pImages.filter((_, i) => i % 3 === 1);
+  let row3Images = pImages.filter((_, i) => i % 3 === 2);
+
+  if (row1Images.length === 0) row1Images = pImages;
+  if (row2Images.length === 0) row2Images = pImages;
+  if (row3Images.length === 0) row3Images = pImages;
 
   return (
     <div
